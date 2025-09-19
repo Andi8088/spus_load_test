@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="hero">
+        <h2>Performance Reports & Analytics</h2>
+        <p>Comprehensive analysis of system performance, bottlenecks, and optimization recommendations</p>
+    </div>
+    
+    <div class="card-grid">
+        <div class="card">
+            <h3><i class="fas fa-tachometer-alt card-icon"></i> Performance Metrics</h3>
+            <p>Key performance indicators monitored during load tests:</p>
+            <ul>
+                <li>API Response Times (p50, p90, p95, p99)</li>
+                <li>Transaction Success/Failure Rates</li>
+                <li>System Throughput (requests/second)</li>
+                <li>Error Rates and Types</li>
+                <li>Concurrent User Capacity</li>
+                <li>Resource Utilization (CPU, Memory, Network)</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><i class="fas fa-exclamation-triangle card-icon"></i> Bottleneck Analysis</h3>
+            <p>Common performance bottlenecks identified in payment systems:</p>
+            <ul>
+                <li>Database connection pooling limitations</li>
+                <li>Payment gateway API rate limiting</li>
+                <li>Network latency between services</li>
+                <li>Server resource constraints (CPU/Memory)</li>
+                <li>Inefficient database queries or missing indexes</li>
+                <li>Third-party service dependencies</li>
+                <li>SSL/TLS handshake overhead</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-chart-line card-icon"></i> Performance Trends</h3>
+        <p>Track system performance over time to identify regressions and improvements:</p>
+        <div class="chart-container">
+            <canvas id="performanceTrendChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-lightbulb card-icon"></i> Optimization Recommendations</h3>
+        <p>Proven strategies to enhance payment system performance:</p>
+        
+        <div class="card-grid">
+            <div class="card">
+                <h4><i class="fas fa-database"></i> Database Optimization</h4>
+                <ul>
+                    <li>Implement connection pooling</li>
+                    <li>Optimize slow queries</li>
+                    <li>Add appropriate indexes</li>
+                    <li>Use read replicas for reporting</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h4><i class="fas fa-server"></i> Infrastructure Scaling</h4>
+                <ul>
+                    <li>Horizontal scaling during peak periods</li>
+                    <li>Auto-scaling based on load</li>
+                    <li>Load balancing across instances</li>
+                    <li>CDN for static assets</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h4><i class="fas fa-code"></i> Application Improvements</h4>
+                <ul>
+                    <li>Implement caching strategies</li>
+                    <li>Use asynchronous processing</li>
+                    <li>Circuit breakers for external services</li>
+                    <li>Request batching and coalescing</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sample performance trend data
+    const ctx = document.getElementById('performanceTrendChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'Average Response Time (ms)',
+                data: [120, 115, 105, 98, 92, 88, 85, 83, 80, 78, 75, 72],
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                fill: true,
+                tension: 0.4
+            }, {
+                label: 'Error Rate (%)',
+                data: [5.2, 4.8, 4.1, 3.5, 3.0, 2.8, 2.5, 2.3, 2.0, 1.8, 1.5, 1.2],
+                borderColor: '#e74c3c',
+                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

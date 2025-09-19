@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="hero">
+        <h2>SPUS Payment Gateway Performance Testing</h2>
+        <p>Ensure your payment system handles high volumes of transactions during peak periods with our comprehensive load testing solution</p>
+        <a href="/loadtest" class="btn-primary"><i class="fas fa-bolt"></i> Start Testing Now</a>
+    </div>
+    
+    <div class="card-grid">
+        <div class="card">
+            <h3><i class="fas fa-users card-icon"></i> Concurrent User Simulation</h3>
+            <p>Test how your system performs under heavy user load with configurable concurrent user scenarios.</p>
+            <ul>
+                <li>10-1000+ concurrent users</li>
+                <li>Realistic user behavior patterns</li>
+                <li>Gradual ramp-up and ramp-down</li>
+                <li>Peak load simulation</li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-stopwatch card-icon"></i> Response Time Analysis</h3>
+            <p>Measure and analyze API response times under various stress levels to identify performance bottlenecks.</p>
+            <ul>
+                <li>Real-time response time monitoring</li>
+                <li>Percentile analysis (p50, p90, p95, p99)</li>
+                <li>Comparative performance metrics</li>
+                <li>Historical data tracking</li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-chart-line card-icon"></i> Detailed Reporting</h3>
+            <p>Generate comprehensive reports with actionable insights to optimize your payment gateway performance.</p>
+            <ul>
+                <li>Automated report generation</li>
+                <li>Bottleneck identification</li>
+                <li>Optimization recommendations</li>
+                <li>Export to multiple formats</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3><i class="fas fa-calendar-alt card-icon"></i> Testing Schedule</h3>
+        <p>Our system is designed to simulate the actual load patterns experienced during enrolled periods from Monday to Saturday.</p>
+        <div class="card-grid">
+            <div class="card">
+                <h4><i class="fas fa-check-circle"></i> Pre-Peak Testing</h4>
+                <p>Validate system readiness before high-traffic periods with controlled load tests.</p>
+            </div>
+            <div class="card">
+                <h4><i class="fas fa-fire"></i> Peak Load Testing</h4>
+                <p>Simulate maximum expected load to ensure system stability during critical periods.</p>
+            </div>
+            <div class="card">
+                <h4><i class="fas fa-search"></i> Continuous Monitoring</h4>
+                <p>Ongoing performance monitoring to detect regressions and validate optimizations.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

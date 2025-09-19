@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="hero">
+        <h2>Load Test Configuration</h2>
+        <p>Configure and execute performance tests to evaluate the SPUS Payment Gateway under various load conditions</p>
+    </div>
+    
+    <div class="card">
+        <h3><i class="fas fa-sliders-h card-icon"></i> Test Parameters</h3>
+        <form id="loadTestForm">
+            <div class="card-grid">
+                <div class="form-group">
+                    <label for="users"><i class="fas fa-users"></i> Concurrent Users</label>
+                    <input type="number" id="users" name="users" min="1" max="1000" value="50" required>
+                    <small>Number of simultaneous users to simulate</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="duration"><i class="fas fa-clock"></i> Test Duration (seconds)</label>
+                    <input type="number" id="duration" name="duration" min="1" max="300" value="30" required>
+                    <small>How long the test should run</small>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-primary" id="runTestBtn">
+                <i class="fas fa-play-circle"></i> Execute Load Test
+            </button>
+        </form>
+        
+        <div class="spinner" id="loadingSpinner"></div>
+    </div>
+
+    <div class="card fade-in" id="results" style="display: none;">
+        <h3><i class="fas fa-chart-bar card-icon"></i> Test Results</h3>
+        <div class="result-grid" id="resultsContent">
+            <!-- Results will be populated here by JavaScript -->
+        </div>
+        
+        <div class="chart-container">
+            <h4><i class="fas fa-chart-pie"></i> Request Distribution</h4>
+            <canvas id="requestChart" width="400" height="200"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h4><i class="fas fa-wave-square"></i> Response Time Distribution</h4>
+            <canvas id="responseTimeChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.getElementById('loadTestForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const users = document.getElementById('users').value;
+    const duration = document.getElementById('duration').value;
+    const runTestBtn = document.getElementById('runTestBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    
+    // Show loading state
+    runTestBtn.disabled = true;
+    runTestBtn.innerHTML = '<i class="fas fa-cog fa-spin"></i> Running Test...';
+    loadingSpinner.style.display = 'block';
+    
+    try {
+        const response = await fetch('/api/run-load-test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                users: parseInt(users),
+                duration: parseInt(duration)
+            })
+        });
+        
+        const results = await response.json();
+        displayResults(results);
+        
+    } catch (error) {
+        alert('Error running load test: ' + error.message);
+    } finally {
+        // Reset button state
+        runTestBtn.disabled = false;
+        runTestBtn.innerHTML = '<i class="fas fa-play-circle"></i> Execute Load Test';
+        loadingSpinner.style.display = 'none';
+    }
+});
+
+function displayResults(results) {
+    const resultsDiv = document.getElementById('resultsContent');
+    
+    // Clear previous results
+    resultsDiv.innerHTML = '';
+    
+    // Create result cards
+    const resultCards = [
+        { label: 'Total Requests', value: results.total_requests, icon: 'fas fa-paper-plane' },
+        { label: 'Successful Requests', value: results.successful_requests, icon: 'fas fa-check-circle', color: '#2ecc71' },
+        { label: 'Failed Requests', value: results.failed_requests, icon: 'fas fa-times-circle', color: '#e74c3c' },
+        { label: 'Success Rate', value: results.success_rate.toFixed(2) + '%', icon: 'fas fa-percent' },
+        { label: 'Avg Response Time', value: results.avg_response_time.toFixed(2) + 'ms', icon: 'fas fa-tachometer-alt' },
+        { label: 'Min Response Time', value: results.min_response_time.toFixed(2) + 'ms', icon: 'fas fa-arrow-down' },
+        { label: 'Max Response Time', value: results.max_response_time.toFixed(2) + 'ms', icon: 'fas fa-arrow-up' },
+        { label: '95th Percentile', value: results.p95_response_time.toFixed(2) + 'ms', icon: 'fas fa-chart-line' }
+    ];
+    
+    resultCards.forEach(card => {
+        const cardElement = document.createElement('div');
+        cardElement.className = 'result-item';
+        cardElement.innerHTML = `
+            <div class="result-value" style="color: ${card.color || '#3498db'}">${card.value}</div>
+            <div class="result-label"><i class="${card.icon}"></i> ${card.label}</div>
+        `;
+        resultsDiv.appendChild(cardElement);
+    });
+    
+    // Show results section
+    document.getElementById('results').style.display = 'block';
+    
+    // Create charts (simplified version)
+    createRequestChart(results);
+    createResponseTimeChart(results);
+}
+
+function createRequestChart(results) {
+    const ctx = document.getElementById('requestChart').getContext('2d');
+    
+    // Destroy previous chart if it exists
+    if (window.requestChartInstance) {
+        window.requestChartInstance.destroy();
+    }
+    
+    window.requestChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Successful', 'Failed'],
+            datasets: [{
+                data: [results.successful_requests, results.failed_requests],
+                backgroundColor: ['#2ecc71', '#e74c3c'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function createResponseTimeChart(results) {
+    const ctx = document.getElementById('responseTimeChart').getContext('2d');
+    
+    // Destroy previous chart if it exists
+    if (window.responseTimeChartInstance) {
+        window.responseTimeChartInstance.destroy();
+    }
+    
+    // Simulate response time distribution (in a real app, you would use actual distribution data)
+    const responseTimes = [
+        results.min_response_time,
+        results.avg_response_time * 0.7,
+        results.avg_response_time,
+        results.avg_response_time * 1.3,
+        results.max_response_time
+    ];
+    
+    window.responseTimeChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Min', '25%', 'Average', '75%', 'Max'],
+            datasets: [{
+                label: 'Response Time (ms)',
+                data: responseTimes,
+                backgroundColor: '#3498db',
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}
